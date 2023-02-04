@@ -28,6 +28,8 @@ from tkinter import filedialog
 from pytube import YouTube
 import pygame
 from time import sleep
+from pathlib import Path
+from datetime import datetime
 import os
 
 # functions :  ----------------------------------------------------------------------------------------------------------------------------
@@ -46,6 +48,7 @@ def getpath():
     path_output.config(text=path)
 
 # function to download video with highest resolution
+
 def DownloadHigh():
   try:
     get_link = link_input.get()
@@ -53,14 +56,16 @@ def DownloadHigh():
     if user_path == "No Path Selected!" or user_path == "":
       patherror()
       return False
+    status.delete(1.0, END)
     status.insert(END,"downloading.. \n")
     main_window.title("Downloading...")
     YouTube(get_link).streams.get_highest_resolution().download(user_path)
-    status.insert(END,"downloadind Successfuly \n")
+    status.insert(END,"downloading Successfuly :)\n")
     main_window.title('Sweet Manager v1.0')
+    
   except:
     linkerror()
-    status.insert(END,"downloading failed!! \n")
+    status.insert(END,"downloading failed :(\n")
     main_window.title('Sweet Manager v1.0')
 
 # function to download video with lowest resolution
@@ -71,14 +76,15 @@ def DownloadLow():
     if user_path == "No Path Selected!" or user_path == "":
       patherror()
       return False
+    status.delete(1.0, END)
     status.insert(END,"downloading.. \n")
     main_window.title("Downloading...")
     YouTube(get_link).streams.get_lowest_resolution().download(user_path)
-    status.insert(END,"downloadind Successfuly \n")
+    status.insert(END,"downloading Successfuly :)\n")
     main_window.title('Sweet Manager v1.0')
   except:
     linkerror()
-    status.insert(END,"downloading failed!! \n")
+    status.insert(END,"downloading failed :(\n")
     main_window.title('Sweet Manager v1.0')
 
 # function to download video in .mp3 format
@@ -89,17 +95,18 @@ def DownloadAudio():
     if user_path == "No Path Selected!" or user_path == "":
       patherror()
       return False
+    status.delete(1.0, END)
     status.insert(END,"downloading.. \n")
     main_window.title("Downloading...")
     mp4 = YouTube(get_link).streams.get_audio_only().download(user_path)
     base, ext = os.path.splitext(mp4)
     mp3 = base + '.mp3'
     os.rename(mp4, mp3)
-    status.insert(END,"downloadind Successfuly \n")
+    status.insert(END,"downloading Successfuly :)\n")
     main_window.title('Sweet Manager v1.0')
   except:
     linkerror()
-    status.insert(END,"downloading failed!! \n")
+    status.insert(END,"downloading failed! :(\n")
     main_window.title('Sweet Manager v1.0')
 
 # function for open path in explorer
@@ -108,6 +115,26 @@ def OpenLocation():
     os.startfile(path_output.cget("text"))
   except:
     patherror()
+
+def SaveInfo():
+  try:
+    get_link = link_input.get()
+    user_path = path_output.cget("text")
+    name = YouTube(get_link).streams[0].default_filename
+
+    dir_path = Path(user_path)
+    file_name = name + ".txt"
+    file_path = dir_path.joinpath(file_name)
+
+    time = datetime.now()
+    current_time = time.strftime("%H:%M:%S")
+
+    f = open(file_path, "w")
+    f.write("Time : {}\n".format(current_time))
+    f.write("Link : {}\n".format(get_link))
+    f.close()
+  except:
+    messagebox.showerror('Sweet Manager', 'Error!')
 
 # function to paly music when the program start
 pygame.mixer.init()
@@ -193,9 +220,10 @@ status.insert('1.0', """
 # Bar Menu (open location, Exit)
 menu = Menu(main_window)
 file_menu = Menu(menu, tearoff=0)
-file_menu.add_command(label='Open', command=OpenLocation)
+file_menu.add_command(label='Open Location', command=OpenLocation)
+file_menu.add_command(label='Save Info', command=SaveInfo)
 file_menu.add_command(label='Exit', command=main_window.quit)
-menu.add_cascade(label='File', menu=file_menu)
+menu.add_cascade(label='Options', menu=file_menu)
 
 # bar Menu(sound off, sound on)
 sound_menu = Menu(menu, tearoff=0)
