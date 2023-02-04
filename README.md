@@ -1,7 +1,7 @@
 # Sweet Manager v1.0 (by 6orram)
 
 - Hi
-- This My First Python Project
+- This's My First Python Project
 - The Project is About a Desktop App that can Dawnload videos from youtube in the form of .mp4 or .mp3
 
 # Notice!!
